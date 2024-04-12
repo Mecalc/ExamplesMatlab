@@ -1,86 +1,78 @@
-%% Read Item list
-% This example will show how to read item list from QServer and read the
-% data it provides.
- 
+%% Read Item List
+% This script demonstrates how to retrieve a list of items from the QServer via its REST API
+% and process the response data.
+
 %% Prerequisites
-% Here the constant variables are defined which will not change throughout
-% the example. You can change the IP address to match that of your Mecalc
-% system.
+% Define constant variables that remain unchanged for the duration of this script.
+% Replace the IP address with the IP of your Mecalc system as necessary.
 ip = "192.168.100.32";
- 
-% Build a URL which will be used for the HTTP connection. The port is
-% always 8080 for the Rest API.
+
+% Construct the base URL for HTTP requests. Port 8080 is used by default for the REST API.
 url = "http://" + ip + ":8080/";
- 
-% Some commands can take some time to finish since QServer will configure
-% the hardware according to the settings set. Do not make this value too
-% small.
+
+% REST API calls may require time to execute, as QServer configures hardware based on provided settings.
+% Ensure the timeout period is sufficiently long to accommodate for this.
 timeout = 120;
- 
-%% HTTP request
-% Since all Rest API calls are made over HTTP socket, we need to do a web
-% query here.
+
+%% HTTP Request
+% REST API interactions are carried out through HTTP requests. In this instance,
+% a GET request is used to obtain data from the API.
 options = weboptions('MediaType','application/json', 'Timeout', timeout, 'RequestMethod','get');
- 
-% Use the "item/list" endpoint to read the item list from the system.
+
+% Access the 'item/list' API endpoint to fetch the list of items from the QServer.
 response = webread(url + "item/list", options);
- 
-% The response from QServer will be in a JSON format. When parsed in
-% MATLAB you'll receive a nested struct where each line indexes an item.
-% To view the struct with information of the first item, you simply access
-% the first index.
+
+% The QServer responds with JSON-formatted data. MATLAB parses this JSON into a nested struct,
+% with each item represented by an individual struct array element.
+% For example, to display data from the first item in the list:
 controller = response(1)
- 
-% The output you'll see
-%controller = 
+
+% Expected output:
+%   controller =
 % 
-%  struct with fields:
+%   struct with fields:
 %
 %                ItemId: 1
 %              ItemName: 'MicroQ'
 %    ItemNameIdentifier: 30100
 %              ItemType: 'Controller'
 %    ItemTypeIdentifier: 0
- 
-% Here are descriptions for the fields:
-% ItemId: This is an unique identifier for each item in the system. It is
-% also used when changing operation modes and settings of the item.
-% ItemName: A name for the item.
-% ItemNameIdentifier: A unique number identifier for the item name.
-% ItemType: A group this item type belongs to.
-% ItemTypeIdentifier: A unique number identifier for the group.
- 
-% The different groups of Items include:
-% Controller, SignalConditioner, Module and Channels.
 
-% Items are constructed in a Family Tree formation.
-% There is only one Controller, and it is always in position 1.
-% A Controller can have multiple SignalConditioners as children, which are
-% used to expand the channel count of a system by providing additional slots
-% for Modules. However, a Controller can host a Module too.
-% A Channel will always belong to a Module as a child.
-% The purpose a Module serves is grouping settings of Channels which has
-% an effect on all Channels, like sampling rate.
-% Here is an example of the Item Tree:
-% Controller
-% - Module
-%   - Channel
-%   - Channel
-% - SignalConditioner
-%   - Module
-%     - Channel
-%     - Channel
-%     - Channel
-%     - Channel
-%   - Empty
-%   - Empty
-%   - Empty
- 
-% To view the tree structure and see all the settings of all items, one can
-% use the GET "system/settings" endpoint.
- 
-% Refer to the user manual for a in depth understanding on how the settings
-% work and what is available.
- 
-% This is the end of the first example, to view more please visit our
-% repository at www.github.com/Mecalc.
+% Field descriptions:
+%   ItemId: Unique identifier for the item within the system, used for item configuration and operation.
+%   ItemName: Descriptive name assigned to the item.
+%   ItemNameIdentifier: Unique numeric code assigned to the item name.
+%   ItemType: Category the item belongs to.
+%   ItemTypeIdentifier: Unique numeric code assigned to the item type.
+
+% The QServer maintains items in a family-tree-like hierarchy:
+%   - Controller: The top-level item. There is only one Controller, typically at the first position.
+%   - SignalConditioner: Devices that extend the system's capability by providing slots for more Modules.
+%   - Module: Components that contain common settings affecting all of their child Channels, like sampling rate.
+%   - Channel: The leaf nodes representing individual data channels contained within Modules.
+
+% For example, the item hierarchy might appear as follows:
+%   Controller
+%   |-- Module
+%       |-- Channel
+%       |-- Channel
+%   |-- SignalConditioner
+%       |-- Module
+%           |-- Channel
+%           |-- Channel
+%           |-- Channel
+%           |-- Channel
+%       |-- Empty slots
+%       |-- Empty slots
+%       |-- Module
+%           |-- Channel
+%           |-- Channel
+%           |-- Channel
+%           |-- Channel
+
+% To view the entire system configuration, including the hierarchical structure and settings for all items,
+% you can use the 'system/settings' endpoint with a GET request.
+
+% Consult the QServer user manual for detailed information on configuration options and settings.
+
+% This concludes the introductory example. For further examples and documentation, visit the Mecalc repository at www.github.com/Mecalc.
