@@ -5,19 +5,20 @@
 %% Prerequisites
 % This script assumes familiarity with basics covered in the BasicsItemList example.
 % Refer to that example for fundamental concepts if necessary. This script is geared
-% towards users with an understanding of QServer's REST API.
+% towards users with a basic understanding of QServer's REST API.
 clearvars;
-ip = "192.168.100.47"; % Update to match the IP Address of your QServer.
+ip = "192.168.100.47"; % Update to match the IP Address of your Device.
 url = "http://" + ip + ":8080/";
 timeout = 120;  % Timeout duration for QServer responses.
-
-% Reset the QServer to default configuration to ensure a known starting point.
 putOptions = weboptions('MediaType','application/x-www-form-urlencoded', 'Timeout', timeout, 'RequestMethod','put');
 getOptions = weboptions('MediaType','application/json', 'Timeout', timeout, 'RequestMethod','get');
+
+% Reset the QServer to default configuration to ensure a known starting point.
+% You can comment this section should you wish to configure the system via QAcquire
 webwrite(url + "system/settings/resetToDefaults", putOptions);
 
 %% Enable Channels for Streaming
-% This section checks if streaming is enabled on any channel and enables one if not.
+% This section checks if streaming is enabled on a channel.
 % A channel with enabled streaming is required for receiving data over the TCP connection.
 foundStreamingChannel = false;  % Initialize flag to detect a streaming channel.
 itemList = webread(url + "item/list", getOptions);  % Retrieve the list of all items.
@@ -190,7 +191,7 @@ if payloadType == 0
     end
 end
 
-% Reminder to close the TCP socket if not already closed, and refer to detailed documentation.
+% Reminder to close the TCP socket if not already closed.
 
 % For detailed explanations of settings and configurations, consult the QServer user manual.
 % This concludes the basic streaming example. For more resources and 
