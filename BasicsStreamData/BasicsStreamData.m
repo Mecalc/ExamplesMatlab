@@ -184,6 +184,20 @@ if payloadType == 0
                      
                     index = index + 16 + data(channelIndex).DataBlock(messageIndex).DataFieldLength;
                 end
+                
+            case 3 % NOTE: For GPS Channels, which is in beta, use at own risk.
+                % A specific Channel header exists which needs to be read.
+                data(channelIndex).Timestamp = typecast(payload(index:index+7), 'double');
+                data(channelIndex).AccuracyEstimate = typecast(payload(index+8:index+9), 'uint16');
+                data(channelIndex).IsLeapSecondsValid = payload(index+10);
+                data(channelIndex).LeapSeconds = payload(index+11);
+                index = index + 12;
+                
+                % Now read the GPS message
+                data(channelIndex).Message = char(payload(index:index + data(channelIndex).ChannelDataSize - 1));
+                index = index + data(channelIndex).ChannelDataSize;
+                
+                disp(data(channelIndex).Message);
         end
         
         % Remember to increase the index variables.
